@@ -58,7 +58,7 @@ collection = db.new_collection
 # 5  получения документа с помощью регулярного выражения
 
 # query = {'name': {"$regex": "test*"}}
-# for value in collection.find(query, {"_id": 0, 'name': 1}):
+# for value in collection.find(query):
 #     print(value)
 
 # 6 получение первого документа в бд
@@ -93,15 +93,53 @@ collection = db.new_collection
 
 # 12 получение баз данных, коллекций
 
-res = client.list_database_names()
-res2 = db.list_collection_names()
-print(res)
-print(res2)
+# res = client.list_database_names()
+# res2 = db.list_collection_names()
+# print(res)
+# print(res2)
 
 
+# UPDATE VALUE
+
+# 1 обновление одного документа
+
+# current = {"name": 'test3'}
+# new_data = {"$set": {"name": "new"}}
+# collection.update_one(current, new_data)
+
+# 2  обновление нескольких с помощью регулярных выражений
+
+# current = {"name": {'$regex': "test*"}}
+# new_data = {"$set": {"name": "UPDATE"}}
+# collection.update_many(current, new_data)
+
+# 3 использование инкримента
+
+# collection.update_one({'_id': 1}, {'$inc': {'balance': -211}})
+
+# 4  удаление из массива ( с конца 1, с начала -1 )
+
+# collection.update_one({'_id': 1}, {'$pop': {'arrage': -1}})
+
+# 5 добавление  в массив
+
+# collection.update_one({'_id': 1}, {'$push': {'arrage': 1}})
 
 
+# DELETE VALUE
 
+# 1 удаление одного значения
 
+# collection.delete_one({'_id': 1})
 
+# 2 удаление нескольких значений, вывод колисчества удаленных значений, удаление всех документов
 
+# res = collection.delete_many({'_id': {'$regex': 'test*'}})
+# print(res.deleted_count)
+# collection.delete_many({})
+
+# CОЗДАНИЕ, УДАЛЕНИЕ, ВЫВОД ИНДЕКСОВ
+#
+# collection.create_index([("name", pymongo.DESCENDING)], unique=True)
+# collection.drop_index("name_-1")
+# print(collection.index_information())
