@@ -4,10 +4,9 @@
 # collection = db.new_collection
 # collection.insert_one({"_id": 1, 'name': 'Alex'})
 import pymongo
-
 client = pymongo.MongoClient('mongodb://localhost:27017')
-db = client.testdb
-collection = db.new_collection
+db = client.cryptoDB
+currency_collection = db.crypto_currency
 # collection.insert_one({'_id': 1, 'name': 2})
 
 # INSERT VALUE
