@@ -5,25 +5,26 @@ import json
 import requests
 
 
-def is_in_db(symbol):
+def is_in_collection(symbol):
     result = currency_collection.find_one({"_id": symbol})
     if result:
         return True
     return False
 
 
-def extract_all_symbols_in_collection():
+def extract_all_symbols():
     url = "https://api-testnet.bybit.com/v5/market/tickers"
     parameters = {'category': 'linear'}
     headers = {}
     response = requests.request("GET", url, headers=headers, params=parameters)
     data = json.loads(response.text)
+    symbols = []
     for ticker in data['result']['list']:
-        if not is_in_db(ticker['symbol']):
-            currency_collection.insert_one({'_id': ticker['symbol'], 'bybit': 1})
+        symbols.append(ticker['symbol'])
+    return symbols
 
 
-symbols = list(map(lambda x: x['_id'], list(currency_collection.find({'bybit': 1}))))
+symbols = extract_all_symbols()
 
 ws = WebSocket(
     testnet=True,
@@ -35,7 +36,10 @@ def update_last_price(message):
     data = message['data']
     symbol = data['symbol']
     last_price = data['lastPrice']
-    currency_collection.update_one({'_id': symbol}, {'$set': {'bybit_price': last_price}})
+    if is_in_collection(symbol):
+        currency_collection.update_one({'_id': symbol}, {'$set': {'bybit_price': last_price}})
+    else:
+        currency_collection.insert_one({'_id': symbol, 'bybit_price': last_price})
 
 
 for symbol in symbols:
@@ -43,4 +47,3 @@ for symbol in symbols:
 
 while True:
     sleep(1)
-
